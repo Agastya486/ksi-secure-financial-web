@@ -1,6 +1,8 @@
 {
     "require": {
         "phpmailer/phpmailer": "^7.1",
-        "vlucas/phpdotenv": "*"
+        "vlucas/phpdotenv": "*",
+        "spomky-labs/otphp": "^11.5",
+        "endroid/qr-code": "^6.0"
     }
 }

@@ -1,8 +1,9 @@
 <?php
 session_start();
 require_once 'db.php';
+require_once 'mailer.php';
 
-// Redirect jika sudah login
+// Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
     header('Location: keuangan.php');
     exit;
@@ -11,14 +12,63 @@ if (isset($_SESSION['user_id'])) {
 $error = '';
 $fullname = '';
 $email = '';
+$step = isset($_SESSION['otp']) ? 2 : 1;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['step'] ?? '') === '2') {
+    // Verify the OTP
+    $otp = trim($_POST['otp'] ?? '');
+
+    if (empty($otp)) {
+        $error = 'Kode verifikasi wajib diisi!';
+    } elseif (time() - $_SESSION['otp_time'] > 300) {
+        $error = 'Kode verifikasi kedaluwarsa. Silakan daftar ulang!';
+        unset($_SESSION['otp'], $_SESSION['otp_time'], $_SESSION['otp_email'], $_SESSION['otp_fullname'], $_SESSION['otp_password']);
+    } elseif (!hash_equals($_SESSION['otp'], $otp)) {
+        $_SESSION['otp_attempts']++;
+
+        if ($_SESSION['otp_attempts'] >= 5) {
+            $error = 'Terlalu banyak percobaan. Silakan daftar ulang!';
+            unset($_SESSION['otp'], $_SESSION['otp_time'], $_SESSION['otp_attempts'], $_SESSION['otp_email'], $_SESSION['otp_fullname'], $_SESSION['otp_password']);
+        } else {
+            $error = 'Kode verifikasi salah! Sisa percobaan: ' . (5 - $_SESSION['otp_attempts']);
+        }
+    } else {
+        try {
+            $insertStmt = $pdo->prepare("INSERT INTO users (fullname, email, password) VALUES (:fullname, :email, :password)");
+            $inserted = $insertStmt->execute([
+                ':fullname' => $_SESSION['otp_fullname'],
+                ':email'    => $_SESSION['otp_email'],
+                ':password' => $_SESSION['otp_password']
+            ]);
+
+            if ($inserted) {
+                $newUserId = $pdo->lastInsertId();
+                $fullname  = $_SESSION['otp_fullname'];
+                $email     = $_SESSION['otp_email'];
+
+                unset($_SESSION['otp'], $_SESSION['otp_time'], $_SESSION['otp_attempts'], $_SESSION['otp_email'], $_SESSION['otp_fullname'], $_SESSION['otp_password']);
+
+                session_regenerate_id(true);
+                $_SESSION['user_id']  = $newUserId;
+                $_SESSION['email']    = $email;
+                $_SESSION['fullname'] = $fullname;
+
+                header('Location: keuangan.php');
+                exit;
+            } else {
+                $error = 'Gagal mendaftarkan akun. Silakan coba lagi!';
+            }
+        } catch (PDOException $e) {
+            $error = 'Terjadi kesalahan pada sistem database. Silakan coba lagi nanti.';
+        }
+    }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fullname        = trim($_POST['fullname'] ?? '');
     $email           = trim($_POST['email'] ?? '');
     $password        = $_POST['password'] ?? '';
     $confirmPassword = $_POST['confirm_password'] ?? '';
 
-    // Validasi input dasar
+    // Basic input validation
     if (empty($fullname) || empty($email) || empty($password) || empty($confirmPassword)) {
         $error = 'Semua bidang form wajib diisi!';
     } if (strlen($email) > 254){
@@ -37,37 +87,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Konfirmasi password tidak cocok!';
     } else {
         try {
-            // Cek apakah email sudah terdaftar (PDO Prepared Statement)
+            // Check if the email is already used
             $checkStmt = $pdo->prepare("SELECT id FROM users WHERE email = :email LIMIT 1");
             $checkStmt->execute([':email' => $email]);
 
             if ($checkStmt->fetch()) {
                 $error = 'Email sudah terdaftar. Silakan gunakan email lain!';
             } else {
-                // Hash password untuk keamanan
-                $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+                // Send the OTP so we know the email really exists
+                $otp = (string) random_int(100000, 999999);
 
-                // Simpan user baru ke database
-                $insertStmt = $pdo->prepare("INSERT INTO users (fullname, email, password) VALUES (:fullname, :email, :password)");
-                $inserted = $insertStmt->execute([
-                    ':fullname' => $fullname,
-                    ':email'    => $email,
-                    ':password' => $hashedPassword
-                ]);
+                $body = '<p>Kode verifikasi akun SI Keuangan anda:</p>'
+                    . '<h2 style="letter-spacing:4px">' . $otp . '</h2>'
+                    . '<p>Jangan bagikan kode ini kepada siapa pun.</p>';
 
-                if ($inserted) {
-                    // Berhasil registrasi, simpan session dan redirect ke keuangan.php
-                    $newUserId = $pdo->lastInsertId();
-
-                    session_regenerate_id(true);
-                    $_SESSION['user_id']  = $newUserId;
-                    $_SESSION['email']    = $email;
-                    $_SESSION['fullname'] = $fullname;
-
-                    header('Location: keuangan.php');
-                    exit;
+                if (sendEmail($email, 'Kode Verifikasi SI Keuangan', $body)) {
+                    $_SESSION['otp']         = $otp;
+                    $_SESSION['otp_time']    = time();
+                    $_SESSION['otp_attempts'] = 0;
+                    $_SESSION['otp_email']   = $email;
+                    $_SESSION['otp_fullname'] = $fullname;
+                    $_SESSION['otp_password'] = password_hash($password, PASSWORD_BCRYPT);
+                    $step = 2;
                 } else {
-                    $error = 'Gagal mendaftarkan akun. Silakan coba lagi!';
+                    $error = 'Gagal mengirim email verifikasi. Silakan coba lagi!';
                 }
             }
         } catch (PDOException $e) {
@@ -129,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     class="fixed bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-teal-600/20 blob pointer-events-none">
   </div>
 
-  <!-- Header / Navigation Back -->
+  <!-- Header -->
   <header class="p-6 relative z-10 w-full">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <a href="index.html" class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-3 group">
@@ -146,28 +189,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </header>
 
-  <!-- Register Main Card -->
+  <!-- Register main card -->
   <main class="relative z-10 my-auto py-8 px-4 flex items-center justify-center">
     <div
       class="w-full max-w-md glass-card p-8 sm:p-10 rounded-3xl border-t border-white/10 shadow-2xl shadow-emerald-500/10 hover:border-emerald-500/30 transition-all duration-500">
 
       <!-- Title -->
       <div class="text-center mb-8">
-        <h1 class="text-3xl font-black text-white tracking-tight mb-2">Buat Akun Baru</h1>
-        <p class="text-slate-400 text-sm font-light">Mari bergabung bersama tim kami sekarang.</p>
+        <h1 class="text-3xl font-black text-white tracking-tight mb-2">
+          <?= $step === 2 ? 'Verifikasi Email' : 'Buat Akun Baru' ?>
+        </h1>
+        <p class="text-slate-400 text-sm font-light">
+          <?= $step === 2 ? 'Masukkan kode yang kami kirim ke email anda.' : 'Mari bergabung bersama kami sekarang.' ?>
+        </p>
       </div>
 
-      <!-- Form Register -->
-      <form action="register.php" method="POST" class="space-y-5">
+      <?php if ($step === 2): ?>
+        <?php $fullname = $_SESSION['otp_fullname']; $email = $_SESSION['otp_email']; ?>
 
-        <!-- Pesan Error -->
+        <form action="register.php" method="POST" class="space-y-5">
+          <input type="hidden" name="step" value="2" />
+
+          <?php if (!empty($error)): ?>
+            <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm text-center font-medium">
+              <?= htmlspecialchars($error); ?>
+            </div>
+          <?php endif; ?>
+
+          <div class="space-y-2">
+            <label for="otp" class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Kode
+              Verifikasi</label>
+            <div class="relative group">
+              <input type="text" id="otp" name="otp" required maxlength="6" inputmode="numeric" autocomplete="one-time-code"
+                placeholder="6 digit kode" class="w-full px-5 py-4 bg-slate-900/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-600 text-sm tracking-[8px] focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-300 group-hover:border-slate-600" />
+            </div>
+            <p class="text-xs text-slate-500">Dikirim ke <?= htmlspecialchars($email); ?></p>
+          </div>
+
+          <button type="submit"
+            class="cursor-pointer w-full py-4 mt-6 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-xl text-sm transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/50 hover:-translate-y-1 active:translate-y-0 border border-white/25 ring-1 ring-white/10">
+            Verifikasi
+          </button>
+        </form>
+      <?php else: ?>
+
+      <!-- Register form -->
+      <form action="register.php" method="POST" class="space-y-5">
+        <input type="hidden" name="step" value="1" />
+
+        <!-- Error message -->
         <?php if (!empty($error)): ?>
           <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm text-center font-medium">
             <?= htmlspecialchars($error); ?>
           </div>
         <?php endif; ?>
 
-        <!-- Input Nama Lengkap -->
+        <!-- Full name input -->
         <div class="space-y-2">
           <label for="fullname" class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Nama
             Lengkap</label>
@@ -177,7 +254,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
         </div>
 
-        <!-- Input Email -->
+        <!-- Email input -->
         <div class="space-y-2">
           <label for="email" class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Email
             Address</label>
@@ -187,7 +264,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
         </div>
 
-        <!-- Input Password -->
+        <!-- Password input -->
         <div class="space-y-2">
           <label for="password"
             class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Password</label>
@@ -201,7 +278,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
         </div>
 
-        <!-- Input Konfirmasi Password -->
+        <!-- Password confirmation input -->
         <div class="space-y-2">
           <label for="confirm_password"
             class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Konfirmasi Password</label>
@@ -221,8 +298,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           Daftar Sekarang
         </button>
       </form>
+      <?php endif; ?>
 
-      <!-- Footer / Login Link -->
+      <!-- Footer -->
       <div class="mt-8 text-center pt-8 border-t border-slate-800/50">
         <p class="text-sm text-slate-400 font-light">
           Sudah punya akun?
@@ -240,7 +318,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </p>
   </footer>
 
-  <!-- Script Toggle Password -->
+  <!-- Toggle password script -->
   <script>
     function bindToggle(inputId, btnId) {
       const input = document.getElementById(inputId);

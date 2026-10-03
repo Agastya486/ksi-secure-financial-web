@@ -5,43 +5,43 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 /**
- * Fungsi untuk mengirim email menggunakan SMTP Brevo
+ * Send transaction/verification emails via Brevo SMTP.
  * 
- * @param string $to Alamat email tujuan
- * @param string $subject Subjek email
- * @param string $body Isi dari email (bisa HTML)
- * @param bool $isHtml Apakah format isi email berupa HTML (default true)
- * @return bool True jika berhasil, False jika gagal
+ * @param string $to Recipient email address
+ * @param string $subject Email subject line
+ * @param string $body Email content (HTML supported)
+ * @param bool $isHtml Format flag (default: true)
+ * @return bool True on success, false on failure
  */
 function sendEmail($to, $subject, $body, $isHtml = true) {
     $mail = new PHPMailer(true);
     
     try {
-        // Konfigurasi Server SMTP Brevo
+        // SMTP Brevo server config
         $mail->isSMTP();
         $mail->Host       = 'smtp-relay.brevo.com';
         $mail->SMTPAuth   = true;
         
-        // Kredensial SMTP
-        $mail->Username   = $_ENV('BREVO_SMTP_USER');
+        // SMTP credentials
+        $mail->Username   = $_ENV['BREVO_SMTP_USER'];
 
-        $mail->Password   = $_ENV('BREVO_SMTP_KEY');
+        $mail->Password   = $_ENV['BREVO_SMTP_KEY'];
         
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 
-        // Informasi Pengirim
-        $mail->setFrom('agastyadevano9@gmail.com', 'Tim SI Keuangan'); 
+        // Sender information
+        $mail->setFrom($_ENV['SMTP_FROM_EMAIL'], $_ENV['SMTP_FROM_NAME'] ?? 'System');
         
-        // Informasi Penerima
+        // Receiver information
         $mail->addAddress($to);
 
-        // Konten Email
+        // Email content
         $mail->isHTML($isHtml);
         $mail->Subject = $subject;
         $mail->Body    = $body;
 
-        // Kirim
+        // Send
         $mail->send();
         return true;
     } catch (Exception $e) {

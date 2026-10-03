@@ -2,7 +2,7 @@
 session_start();
 $_SESSION = array();
 
-// Hapus cookie session jika ada
+// Delete existing cookies
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
     setcookie(session_name(), '', time() - 42000,

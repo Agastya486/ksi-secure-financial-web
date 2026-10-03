@@ -2,7 +2,7 @@
 session_start();
 require_once 'db.php';
 
-// Cek session, jika tidak ada, redirect ke login.php
+// Check session, if nothing, redirect to login.php
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $error = '';
 
-// Tambah Transaksi Baru (POST)
+// Add new POST transaction
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add') {
     $tanggal    = trim($_POST['tanggal'] ?? date('Y-m-d'));
     $tipe       = trim($_POST['tipe'] ?? '');
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// Ringkasan: total pemasukan, pengeluaran, saldo (milik user login saja)
+// Summary of user's finance
 $totalMasuk = 0;
 $totalKeluar = 0;
 try {
@@ -56,11 +56,11 @@ try {
         if ($row['tipe'] === 'pengeluaran') $totalKeluar = (float)$row['total'];
     }
 } catch (PDOException $e) {
-    // biarkan 0 jika gagal
+    // let it 0 if fail
 }
 $saldo = $totalMasuk - $totalKeluar;
 
-// Ambil SEMUA transaksi milik user (filter dilakukan via JS tanpa refresh)
+// Take all user's transaction for filter
 $transactions = [];
 try {
     $stmt = $pdo->prepare("SELECT * FROM transactions WHERE user_id = :uid ORDER BY tanggal DESC, created_at DESC");
@@ -70,7 +70,7 @@ try {
     $transactions = [];
 }
 
-// Helper
+// Helper for initial avatar pfp
 function getInitials($name) {
     $words = explode(' ', trim($name));
     $initials = '';
@@ -162,7 +162,7 @@ $userName     = htmlspecialchars($_SESSION['fullname'] ?? 'User');
       <p class="text-slate-400 text-base font-light">Catat pemasukan & pengeluaran harianmu dengan simpel.</p>
     </div>
 
-    <!-- Ringkasan 3 kartu -->
+    <!-- Summary (3 cards) -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
       <div class="glass-card rounded-2xl p-6 border-l-4 border-l-emerald-500">
         <p class="text-xs font-bold uppercase tracking-widest text-emerald-300 mb-1">Pemasukan</p>
@@ -178,7 +178,7 @@ $userName     = htmlspecialchars($_SESSION['fullname'] ?? 'User');
       </div>
     </div>
 
-    <!-- Form Tambah Transaksi -->
+    <!-- Add transaction form -->
     <div class="glass-card rounded-3xl p-6 sm:p-8 border-t border-white/10 shadow-2xl shadow-emerald-500/5 mb-10 hover:border-emerald-500/20 transition-all duration-300">
       <h2 class="text-lg font-bold text-white mb-6">Tambah Transaksi Baru</h2>
       <form action="keuangan.php" method="POST" class="space-y-4">
@@ -235,7 +235,7 @@ $userName     = htmlspecialchars($_SESSION['fullname'] ?? 'User');
       </form>
     </div>
 
-    <!-- Daftar Transaksi -->
+    <!-- Transaction history -->
     <div class="space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/50 pb-4">
         <h2 class="text-xl font-bold text-white">Riwayat Transaksi</h2>
@@ -301,7 +301,7 @@ $userName     = htmlspecialchars($_SESSION['fullname'] ?? 'User');
     tipeSelect.addEventListener('change', renderKategori);
     renderKategori();
 
-    // Filter Tanpa Refresh: show/hide item via data-tipe
+    // Filter without refreshing page
     const filterBtns = document.querySelectorAll('.filter-btn');
     const trxItems = document.querySelectorAll('.trx-item');
     const trxCount = document.getElementById('trxCount');

@@ -2,7 +2,7 @@
 session_start();
 require_once 'db.php';
 
-// Jika session masih ada, redirect ke keuangan.php
+// If session still exists, redirect to main page
 if (isset($_SESSION['user_id'])) {
     header('Location: keuangan.php');
     exit;
@@ -11,11 +11,17 @@ if (isset($_SESSION['user_id'])) {
 $error = '';
 $email = '';
 
+if (!isset($_SESSION['login_attempts'])) {
+    $_SESSION['login_attempts'] = 0;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    if (empty($email) || empty($password)) {
+    if ($_SESSION['login_attempts'] >= 5) {
+        $error = 'Terlalu banyak percobaan login. Silakan coba lagi nanti!';
+    } elseif (empty($email) || empty($password)) {
         $error = 'Email dan Password wajib diisi!';
     } else {
         try {
@@ -23,21 +29,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([':email' => $email]);
             $user = $stmt->fetch();
 
-            // Verifikasi Password
-            if ($user && (password_verify($password, $user['password']) || $password === $user['password'])) {
-                // Regenerasi ID sesi untuk mencegah Session Fixation
-                session_regenerate_id(true);
+            // Password verification. Using fake hash so the process time is similar
+            $hash = $user['password'] ?? '$2y$10$HCyu1W.kJCT8PT4fpABiIeZDPD3V0zaSmZHNOEoXAxNtKBd6Bdeem';
 
-                // Simpan data login ke session
+            if (password_verify($password, $hash) && $user) {
+                // If 2FA active, ask for code first
+                if (!empty($user['totp_secret'])) {
+                    $_SESSION['pending_user_id'] = $user['id'];
+                    $_SESSION['mfa_attempts'] = 0;
+
+                    header('Location: verify-2fa.php');
+                    exit;
+                }
+
+                // New session ID for preventing Session Fixation
+                session_regenerate_id(true);
+                unset($_SESSION['login_attempts']);
+
+                // Save login data to session
                 $_SESSION['user_id']  = $user['id'];
                 $_SESSION['email']    = $user['email'];
                 $_SESSION['fullname'] = $user['fullname'] ?? $user['name'] ?? 'User';
 
-                // Redirect ke halaman keuangan.php setelah berhasil login
+                // Redirect after login successful
                 header('Location: keuangan.php');
                 exit;
             } else {
-                $error = 'Email atau password yang Anda masukkan salah!';
+                $_SESSION['login_attempts']++;
+                $error = 'Email atau password yang anda masukkan salah! Sisa percobaan: ' . (5 - $_SESSION['login_attempts']);
             }
         } catch (PDOException $e) {
             $error = 'Terjadi kesalahan pada sistem. Silakan coba lagi nanti.';
@@ -99,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     class="fixed bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-teal-600/20 blob pointer-events-none">
   </div>
 
-  <!-- Header / Navigation Back -->
+  <!-- Header -->
   <header class="p-6 relative z-10 w-full">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <a href="index.html" class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-3 group">
@@ -116,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </header>
 
-  <!-- Login Main Card -->
+  <!-- Login main card -->
   <main class="relative z-10 my-auto py-12 px-4 flex items-center justify-center">
     <div
       class="w-full max-w-md glass-card p-8 sm:p-10 rounded-3xl border-t border-white/10 shadow-2xl shadow-emerald-500/10 hover:border-emerald-500/30 transition-all duration-500">
@@ -124,20 +143,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <!-- Title -->
       <div class="text-center mb-10">
         <h1 class="text-3xl font-black text-white tracking-tight mb-2">Selamat Datang</h1>
-        <p class="text-slate-400 text-sm font-light">Masukan kredensial Anda untuk melanjutkan ke dashboard.</p>
+        <p class="text-slate-400 text-sm font-light">Masukan kredensial anda untuk melanjutkan ke dashboard.</p>
       </div>
 
-      <!-- Form Login -->
+      <!-- Login form -->
       <form action="login.php" method="POST" class="space-y-6">
 
-        <!-- Pesan Error Login -->
+        <!-- Error code login -->
         <?php if (!empty($error)): ?>
           <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm text-center font-medium">
             <?= htmlspecialchars($error); ?>
           </div>
         <?php endif; ?>
 
-        <!-- Input Email -->
+        <!-- Email input -->
         <div class="space-y-2">
           <label for="email" class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Email
             Address</label>
@@ -147,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
         </div>
 
-        <!-- Input Password -->
+        <!-- Password input -->
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <label for="password"
@@ -170,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </button>
       </form>
 
-      <!-- Footer / Register Link -->
+      <!-- Footer / Register link -->
       <div class="mt-8 text-center pt-8 border-t border-slate-800/50">
         <p class="text-sm text-slate-400 font-light">
           Belum punya akun?
@@ -187,7 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <p class="text-slate-600 text-xs font-medium uppercase tracking-widest">&copy; 2026 SI Keuangan. Secured Login.</p>
   </footer>
 
-  <!-- Script Toggle Password -->
+  <!-- Toggle password script -->
   <script>
     const passwordInput = document.getElementById('password');
     const toggleBtn = document.getElementById('togglePassword');
