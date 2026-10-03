@@ -16,9 +16,10 @@ RUN npm run build
 # PHP Apache production environment
 FROM php:8.2-apache
 
-# Install system dependencies, zip tools, and PostgreSQL drivers
+# Install system dependencies, zip tools, PostgreSQL and curl dev headers
 RUN apt-get update && apt-get install -y \
     libpq-dev \
+    libcurl4-openssl-dev \
     git \
     unzip \
     zip \
