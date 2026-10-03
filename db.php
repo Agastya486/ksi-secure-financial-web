@@ -7,7 +7,7 @@ if (file_exists(__DIR__ . '/.env')) {
     $dotenv->load();
 }
 
-$dsn = "pgsql:host=aws-0-ap-northeast-1.pooler.supabase.com;port=6543;dbname=postgres";
+$dsn = "pgsql:host=aws-0-ap-southeast-1.pooler.supabase.com;port=6543;dbname=postgres";
 $user = $_ENV['SUPABASE_DB_USER'];
 $pass = $_ENV['SUPABASE_DB_PASSWORD'];
 
