@@ -1,58 +1,51 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 
 /**
- * Send transaction/verification emails via Brevo SMTP.
- * 
+ * Send an email using the Brevo HTTPS API.
+ * Need Brevo API Key
  * @param string $to Recipient email address
- * @param string $subject Email subject line
- * @param string $body Email content (HTML supported)
- * @param bool $isHtml Format flag (default: true)
- * @return bool True on success, false on failure
+ * @param string $subject Email subject
+ * @param string $body Email content
+ * @param bool $isHtml True if the content is HTML, false for plain text
+ * @return bool True if Brevo accepted the email, false if not
  */
 function sendEmail($to, $subject, $body, $isHtml = true) {
-    $mail = new PHPMailer(true);
-    
-    try {
-        // SMTP Brevo server config
-        $mail->isSMTP();
-        $mail->Host       = 'smtp-relay.brevo.com';
-        $mail->SMTPAuth   = true;
-        
-        // SMTP credentials
-        $mail->Username   = $_ENV['BREVO_SMTP_USER'];
+    $payload = [
+        'sender'  => [
+            'name'  => $_ENV['SMTP_FROM_NAME'] ?? 'System',
+            'email' => $_ENV['SMTP_FROM_EMAIL'] ?? '',
+        ],
+        'to'      => [['email' => $to]],
+        'subject' => $subject,
+    ];
 
-        $mail->Password   = $_ENV['BREVO_SMTP_KEY'];
-        
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
+    $payload[$isHtml ? 'htmlContent' : 'textContent'] = $body;
 
-        // Sender information
-        $mail->setFrom($_ENV['SMTP_FROM_EMAIL'], $_ENV['SMTP_FROM_NAME'] ?? 'System');
-        
-        // Receiver information
-        $mail->addAddress($to);
+    $ch = curl_init('https://api.brevo.com/v3/smtp/email');
 
-        // TEMP DEBUG: cek isi env var tanpa membocorkan nilainya
-        error_log('[MAIL] from_len=' . strlen((string)($_ENV['SMTP_FROM_EMAIL'] ?? ''))
-            . ' user_len=' . strlen((string)($_ENV['BREVO_SMTP_USER'] ?? ''))
-            . ' key_len=' . strlen((string)($_ENV['BREVO_SMTP_KEY'] ?? ''))
-            . ' openssl=' . (extension_loaded('openssl') ? 'yes' : 'no'));
+    curl_setopt_array($ch, [
+        CURLOPT_POST           => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 15,
+        CURLOPT_HTTPHEADER     => [
+            'Content-Type: application/json',
+            'accept: application/json',
+            'api-key: ' . ($_ENV['BREVO_API_KEY'] ?? ''),
+        ],
+        CURLOPT_POSTFIELDS     => json_encode($payload),
+    ]);
 
-        // Email content
-        $mail->isHTML($isHtml);
-        $mail->Subject = $subject;
-        $mail->Body    = $body;
+    $response = curl_exec($ch);
+    $status   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlErr  = curl_error($ch);
+    curl_close($ch);
 
-        // Send
-        $mail->send();
+    // Answer 201 when it accepted the email
+    if ($status === 201) {
         return true;
-    } catch (Exception $e) {
-        // TEMP DEBUG: writes the real reason to the log, remove after we fix it
-        error_log('[MAIL FAIL] ' . $e->getMessage());
-        return false;
     }
+
+    error_log('[MAIL FAIL] status=' . $status . ' err=' . $curlErr . ' resp=' . $response);
+
+    return false;
 }
