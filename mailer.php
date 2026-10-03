@@ -36,6 +36,12 @@ function sendEmail($to, $subject, $body, $isHtml = true) {
         // Receiver information
         $mail->addAddress($to);
 
+        // TEMP DEBUG: cek isi env var tanpa membocorkan nilainya
+        error_log('[MAIL] from_len=' . strlen((string)($_ENV['SMTP_FROM_EMAIL'] ?? ''))
+            . ' user_len=' . strlen((string)($_ENV['BREVO_SMTP_USER'] ?? ''))
+            . ' key_len=' . strlen((string)($_ENV['BREVO_SMTP_KEY'] ?? ''))
+            . ' openssl=' . (extension_loaded('openssl') ? 'yes' : 'no'));
+
         // Email content
         $mail->isHTML($isHtml);
         $mail->Subject = $subject;
@@ -45,6 +51,8 @@ function sendEmail($to, $subject, $body, $isHtml = true) {
         $mail->send();
         return true;
     } catch (Exception $e) {
+        // TEMP DEBUG: writes the real reason to the log, remove after we fix it
+        error_log('[MAIL FAIL] ' . $e->getMessage());
         return false;
     }
 }
