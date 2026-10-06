@@ -4,24 +4,18 @@ require_once 'db.php';
 
 // If session still exists, redirect to main page
 if (isset($_SESSION['user_id'])) {
-    header('Location: keuangan.php');
+    header('Location: dashboard.php');
     exit;
 }
 
 $error = '';
 $email = '';
 
-if (!isset($_SESSION['login_attempts'])) {
-    $_SESSION['login_attempts'] = 0;
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    if ($_SESSION['login_attempts'] >= 5) {
-        $error = 'Terlalu banyak percobaan login. Silakan coba lagi nanti!';
-    } elseif (empty($email) || empty($password)) {
+    if (empty($email) || empty($password)) {
         $error = 'Email dan Password wajib diisi!';
     } else {
         try {
@@ -44,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // New session ID for preventing Session Fixation
                 session_regenerate_id(true);
-                unset($_SESSION['login_attempts']);
 
                 // Save login data to session
                 $_SESSION['user_id']  = $user['id'];
@@ -52,11 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['fullname'] = $user['fullname'] ?? $user['name'] ?? 'User';
 
                 // Redirect after login successful
-                header('Location: keuangan.php');
+                header('Location: dashboard.php');
                 exit;
             } else {
-                $_SESSION['login_attempts']++;
-                $error = 'Email atau password yang anda masukkan salah! Sisa percobaan: ' . (5 - $_SESSION['login_attempts']);
+                $error = 'Email atau password yang anda masukkan salah!';
             }
         } catch (PDOException $e) {
             $error = 'Terjadi kesalahan pada sistem. Silakan coba lagi nanti.';

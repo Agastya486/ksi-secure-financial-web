@@ -14,5 +14,5 @@ $pass = $_ENV['SUPABASE_DB_PASSWORD'];
 try {
     $pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 } catch (PDOException $e) {
-    die("Gagal: " . $e->getMessage());
+    die("Gagal terhubung ke database. Silahkan coba lagi nanti");
 }

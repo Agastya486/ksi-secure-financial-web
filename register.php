@@ -5,7 +5,7 @@ require_once 'mailer.php';
 
 // Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
-    header('Location: keuangan.php');
+    header('Location: dashboard.php');
     exit;
 }
 
@@ -51,9 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['step'] ?? '') === '2') {
                 session_regenerate_id(true);
                 $_SESSION['user_id']  = $newUserId;
                 $_SESSION['email']    = $email;
-                $_SESSION['fullname'] = $fullname;
+                    $_SESSION['fullname'] = $fullname;
 
-                header('Location: keuangan.php');
+                    header('Location: dashboard.php');
                 exit;
             } else {
                 $error = 'Gagal mendaftarkan akun. Silakan coba lagi!';

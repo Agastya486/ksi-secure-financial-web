@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (time() > $_SESSION['otp_expiry']) {
                 $error = 'OTP telah kedaluwarsa. Silakan ulangi proses pembaruan.';
                 unset($_SESSION['otp'], $_SESSION['otp_expiry'], $_SESSION['pending_email'], $_SESSION['pending_fullname'], $_SESSION['pending_password']);
-            } elseif ($inputOtp !== $_SESSION['otp']) {
+            } elseif (!hash_equals($_SESSION['otp'], $inputOtp)) {
                 $error = 'Kode OTP salah!';
             } else {
                 // OTP is valid
@@ -139,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->execute([':id' => $_SESSION['user_id']]);
                     $user = $stmt->fetch();
                 } catch (PDOException $e) {
-                    $error = 'Gagal memperbarui profil: ' . $e->getMessage();
+                    $error = 'Gagal memperbarui profil. Silahkan coba lagi nanti.';
                 }
             }
         } else {
@@ -185,7 +185,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if ($checkStmt->fetch()) {
                             $error = 'Email tersebut sudah digunakan oleh akun lain.';
                         } else {
-                            $otp = sprintf("%06d", mt_rand(1, 999999));
+                            $otp = sprintf("%06d", random_int(0, 999999));
                             $_SESSION['otp'] = $otp;
                             $_SESSION['otp_expiry'] = time() + 300; 
                             $_SESSION['pending_email'] = $newEmail;
@@ -213,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                         }
                     } catch (PDOException $e) {
-                        $error = 'Gagal mengecek email: ' . $e->getMessage();
+                        $error = 'Gagal mengecek email. Silakan coba lagi nanti.';
                     }
                 } else {
                     try {
@@ -238,7 +238,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $stmt->execute([':id' => $_SESSION['user_id']]);
                         $user = $stmt->fetch();
                     } catch (PDOException $e) {
-                        $error = 'Gagal memperbarui profil: ' . $e->getMessage();
+                        $error = 'Gagal memperbarui profil. Silakan coba lagi nanti.';
                     }
                 }
             }
@@ -315,7 +315,7 @@ $userInitials = getInitials($user['fullname'] ?? 'User');
   <!-- Navbar -->
   <header class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-      <a href="keuangan.php" class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-3 group">
+      <a href="dashboard.php" class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-3 group">
         <div
           class="relative w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 shadow-lg shadow-emerald-500/30 group-hover:shadow-emerald-500/50 transition-all duration-300 transform group-hover:scale-105">
           <span class="text-white font-black text-sm">Rp</span>
@@ -325,7 +325,7 @@ $userInitials = getInitials($user['fullname'] ?? 'User');
       </a>
 
       <nav class="hidden md:flex items-center gap-8">
-        <a href="keuangan.php" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Dashboard</a>
+        <a href="dashboard.php" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Dashboard</a>
         <a href="profile.php"
           class="text-sm font-bold text-white relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-emerald-500 after:rounded-full">Profil</a>
       </nav>

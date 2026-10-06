@@ -5,7 +5,7 @@ require_once 'totp.php';
 
 // Redirect to main page if session exist
 if (isset($_SESSION['user_id'])) {
-    header('Location: keuangan.php');
+    header('Location: dashboard.php');
     exit;
 }
 
@@ -57,9 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($user)) {
                 $_SESSION['email']    = $user['email'];
                 $_SESSION['fullname'] = $user['fullname'] ?? 'User';
 
-                unset($_SESSION['pending_user_id'], $_SESSION['mfa_attempts'], $_SESSION['login_attempts']);
+                unset($_SESSION['pending_user_id'], $_SESSION['mfa_attempts']);
 
-                header('Location: keuangan.php');
+                header('Location: dashboard.php');
                 exit;
             }
 

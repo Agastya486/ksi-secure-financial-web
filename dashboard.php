@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 ':jumlah'     => (float)$jumlah,
                 ':tanggal'    => $tanggal,
             ]);
-            header('Location: keuangan.php');
+            header('Location: dashboard.php');
             exit;
         } catch (PDOException $e) {
             $error = 'Gagal menyimpan transaksi. Silakan coba lagi.';
@@ -130,7 +130,7 @@ $userName     = htmlspecialchars($_SESSION['fullname'] ?? 'User');
   <!-- Navbar -->
   <header class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-      <a href="keuangan.php" class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-3 group">
+      <a href="dashboard.php" class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-3 group">
         <div class="relative w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 shadow-lg shadow-emerald-500/30 group-hover:shadow-emerald-500/50 transition-all duration-300 transform group-hover:scale-105">
           <span class="text-white font-black text-lg">Rp</span>
         </div>
@@ -138,7 +138,7 @@ $userName     = htmlspecialchars($_SESSION['fullname'] ?? 'User');
       </a>
 
       <nav class="hidden md:flex items-center gap-8">
-        <a href="keuangan.php" class="text-sm font-bold text-white relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-emerald-500 after:rounded-full">Dashboard</a>
+        <a href="dashboard.php" class="text-sm font-bold text-white relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-emerald-500 after:rounded-full">Dashboard</a>
         <a href="profile.php" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Profil</a>
       </nav>
 
@@ -181,7 +181,7 @@ $userName     = htmlspecialchars($_SESSION['fullname'] ?? 'User');
     <!-- Add transaction form -->
     <div class="glass-card rounded-3xl p-6 sm:p-8 border-t border-white/10 shadow-2xl shadow-emerald-500/5 mb-10 hover:border-emerald-500/20 transition-all duration-300">
       <h2 class="text-lg font-bold text-white mb-6">Tambah Transaksi Baru</h2>
-      <form action="keuangan.php" method="POST" class="space-y-4">
+      <form action="dashboard.php" method="POST" class="space-y-4">
         <input type="hidden" name="action" value="add">
 
         <?php if (!empty($error)): ?>
@@ -286,7 +286,7 @@ $userName     = htmlspecialchars($_SESSION['fullname'] ?? 'User');
   </main>
 
   <footer class="p-6 relative z-10 text-center glass-nav mt-auto border-t border-white/5">
-    <p class="text-slate-600 text-xs font-medium uppercase tracking-widest">&copy; 2026 SI Keuangan. Dashboard Pribadi.</p>
+    <p class="text-slate-600 text-xs font-medium uppercase tracking-widest">&copy; 2026 SI Keuangan.</p>
   </footer>
 
   <script>
