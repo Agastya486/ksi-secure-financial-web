@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div style='font-family: Arial, sans-serif;'>
                             <h2 style='color: #4F46E5;'>Pemberitahuan Perubahan Email</h2>
                             <p>Halo, <strong>" . htmlspecialchars($fullname) . "</strong>.</p>
-                            <p>Email akun Anda di SI Keuangan telah berhasil diubah menjadi: <strong>" . htmlspecialchars($newEmail) . "</strong>.</p>
+                            <p>Email akun Anda di DompetKu telah berhasil diubah menjadi: <strong>" . htmlspecialchars($newEmail) . "</strong>.</p>
                         </div>
                     ";
                     sendEmail($newEmail, $subjek, $pesanHtml);
@@ -266,254 +266,203 @@ $userInitials = getInitials($user['fullname'] ?? 'User');
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Profil Saya - SI Keuangan</title>
+  <title>Profil Saya - DompetKu</title>
   <link rel="stylesheet" href="./dist/output.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Outfit', sans-serif;
+    .grid-lines {
+      background-size: 56px 56px;
+      background-image: linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
     }
 
-    .glass-nav {
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .glass-card {
-      background: rgba(30, 41, 59, 0.4);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    .grid-pattern {
-      background-size: 40px 40px;
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    }
-
-    .blob {
-      filter: blur(100px);
-      z-index: -1;
-      opacity: 0.4;
+    .glow {
+      position: absolute;
+      border-radius: 9999px;
+      filter: blur(120px);
+      pointer-events: none;
     }
   </style>
 </head>
 
-<body
-  class="bg-slate-950 text-slate-200 antialiased min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white relative overflow-x-hidden">
+<body class="bg-surface text-ink antialiased min-h-screen flex flex-col font-sans selection:bg-accent-600 selection:text-white relative overflow-x-hidden">
 
-  <!-- Background decorations -->
-  <div class="fixed inset-0 grid-pattern pointer-events-none z-[-2]"></div>
-  <div class="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-emerald-600/20 blob pointer-events-none">
-  </div>
-  <div class="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-teal-600/10 blob pointer-events-none">
-  </div>
+  <div class="fixed inset-0 grid-lines pointer-events-none z-[-2]"></div>
+  <div class="glow top-[-20%] left-[-10%] w-[38rem] h-[38rem] bg-accent-600/10"></div>
 
   <!-- Navbar -->
-  <header class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-      <a href="dashboard.php" class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-3 group">
-        <div
-          class="relative w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 shadow-lg shadow-emerald-500/30 group-hover:shadow-emerald-500/50 transition-all duration-300 transform group-hover:scale-105">
-          <span class="text-white font-black text-sm">Rp</span>
-        </div>
-        <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 hidden sm:inline-block">SI
-          Keuangan</span>
+  <header class="sticky top-0 z-50 border-b border-line/70 bg-surface/80 backdrop-blur-xl">
+    <div class="mx-auto max-w-5xl px-6 h-16 flex items-center justify-between">
+      <a href="dashboard.php" class="flex items-center gap-2.5">
+        <img src="./dist/logo.png" alt="DompetKu" class="w-9 h-9" />
+        <span class="font-bold tracking-tight text-white">DompetKu</span>
       </a>
 
-      <nav class="hidden md:flex items-center gap-8">
-        <a href="dashboard.php" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Dashboard</a>
-        <a href="profile.php"
-          class="text-sm font-bold text-white relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-emerald-500 after:rounded-full">Profil</a>
+      <nav class="hidden sm:flex items-center gap-6 text-sm">
+        <a href="dashboard.php" class="text-ink-muted hover:text-ink transition-colors">Dashboard</a>
+        <a href="profile.php" class="text-white font-medium">Profil</a>
       </nav>
 
-      <div class="flex items-center gap-5">
+      <div class="flex items-center gap-3">
         <a href="profile.php"
-          class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-sm hover:scale-105 transition-transform hover:shadow-lg hover:shadow-emerald-500/20 group relative">
-          <?= htmlspecialchars($userInitials) ?>
-          <span
-            class="absolute -bottom-10 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-xs px-2 py-1 rounded text-white whitespace-nowrap pointer-events-none">
-            <?= htmlspecialchars($user['fullname']) ?>
-          </span>
-        </a>
-        <div class="w-px h-6 bg-slate-700/50 hidden sm:block"></div>
-        <a href="logout.php"
-          class="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-rose-400 transition-colors flex items-center gap-1">
-          <span>Logout</span>
-          <span class="text-lg">→</span>
-        </a>
+          class="w-9 h-9 grid place-items-center rounded-lg border border-line bg-raised text-sm font-semibold text-accent-400 hover:border-accent-600 transition-colors"
+          title="<?= htmlspecialchars($user['fullname']) ?>"><?= htmlspecialchars($userInitials) ?></a>
+        <a href="logout.php" class="text-sm text-ink-muted hover:text-danger transition-colors">Keluar</a>
       </div>
     </div>
   </header>
 
-  <main class="pt-32 pb-16 px-6 max-w-4xl mx-auto w-full flex-grow relative z-10">
+  <main class="mx-auto max-w-5xl w-full px-6 py-10 flex-grow">
 
-    <!-- Title section -->
-    <div class="mb-10 flex flex-col items-center sm:items-start text-center sm:text-left">
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-4 border-emerald-500/30">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span class="text-xs font-bold tracking-widest text-emerald-300 uppercase">Pengaturan Akun</span>
-      </div>
-      <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight mb-2">Profil Pengguna</h1>
-      <p class="text-slate-400 text-base font-light">Kelola informasi pribadi dan kata sandi akun Anda.</p>
-    </div>
+    <h1 class="text-2xl font-bold text-white tracking-tight">Profil</h1>
+    <p class="mt-1 text-ink-muted">Kelola data akun dan keamananmu.</p>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
 
       <!-- Profile summary card (Left) -->
-      <div class="md:col-span-1 glass-card p-6 rounded-3xl border-t border-white/10 flex flex-col items-center text-center h-fit">
-        <div
-          class="w-24 h-24 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 flex items-center justify-center text-white font-black text-3xl mb-4 shadow-xl shadow-emerald-500/30">
+      <div class="rounded-xl border border-line bg-raised/50 p-6 h-fit">
+        <div class="w-14 h-14 grid place-items-center rounded-full bg-accent-500/15 text-lg font-bold text-accent-400">
           <?= htmlspecialchars($userInitials) ?>
         </div>
-        <h2 class="text-xl font-extrabold text-white mb-1"><?= htmlspecialchars($user['fullname']) ?></h2>
-        <p class="text-xs text-emerald-300 font-medium mb-4"><?= htmlspecialchars($user['email']) ?></p>
 
-        <div class="w-full pt-4 border-t border-slate-800/80 space-y-3 text-left text-xs">
-          <div class="flex justify-between items-center text-slate-400">
-            <span>Status Akun</span>
-            <span class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">Aktif</span>
+        <h2 class="mt-4 font-semibold text-white"><?= htmlspecialchars($user['fullname']) ?></h2>
+        <p class="mt-0.5 text-sm text-ink-muted break-all"><?= htmlspecialchars($user['email']) ?></p>
+
+        <dl class="mt-5 pt-4 border-t border-line space-y-2 text-sm">
+          <div class="flex justify-between">
+            <dt class="text-ink-faint">Status</dt>
+            <dd class="text-accent-400">Aktif</dd>
           </div>
-          <div class="flex justify-between items-center text-slate-400">
-            <span>ID Pengguna</span>
-            <span class="font-mono text-slate-300">#<?= htmlspecialchars($user['id']) ?></span>
+          <div class="flex justify-between">
+            <dt class="text-ink-faint">ID</dt>
+            <dd class="font-mono text-ink-muted">#<?= htmlspecialchars($user['id']) ?></dd>
           </div>
-          <div class="flex justify-between items-center text-slate-400">
-            <span>Terdaftar</span>
-            <span class="text-slate-300">
+          <div class="flex justify-between">
+            <dt class="text-ink-faint">Terdaftar</dt>
+            <dd class="text-ink-muted">
               <?= !empty($user['created_at']) ? date('d M Y', strtotime($user['created_at'])) : '-' ?>
-            </span>
+            </dd>
           </div>
-        </div>
+        </dl>
       </div>
 
       <!-- Profile & password edit form (Right) -->
-      <div class="md:col-span-2 glass-card p-6 sm:p-8 rounded-3xl border-t border-white/10 shadow-2xl">
-        <h2 class="text-xl font-bold text-white mb-6">Perbarui Data Akun</h2>
+      <section class="md:col-span-2 rounded-xl border border-line bg-raised/40 p-6">
+        <h2 class="font-semibold text-white mb-5">Data Akun</h2>
 
-          <!-- Alert error / Success -->
           <?php if (!empty($error)): ?>
-            <div class="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm text-center font-medium">
+            <div class="mb-5 p-3 rounded-lg bg-danger/10 border border-danger/30 text-danger text-sm text-center">
               <?= htmlspecialchars($error); ?>
             </div>
           <?php endif; ?>
 
           <?php if (!empty($success)): ?>
-            <div class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm text-center font-medium">
+            <div class="mb-5 p-3 rounded-lg bg-accent-500/10 border border-accent-600/30 text-accent-400 text-sm text-center">
               <?= $success; ?>
             </div>
           <?php endif; ?>
 
         <?php if (isset($_SESSION['otp'])): ?>
           <!-- OTP Form -->
-          <div class="p-6 border border-emerald-500/30 bg-emerald-500/10 rounded-2xl">
-             <p class="text-sm text-emerald-200 mb-6 text-center leading-relaxed">
-               Kami telah mengirimkan 6-digit kode OTP ke email <strong class="text-white"><?= htmlspecialchars($_SESSION['pending_email'] ?? '') ?></strong>.<br>Silakan masukkan kode tersebut di bawah ini untuk melanjutkan.
+          <div class="rounded-lg border border-accent-600/30 bg-accent-500/10 p-5">
+             <p class="text-sm text-ink-muted mb-5 text-center leading-relaxed">
+               Kode OTP 6 digit dikirim ke email <strong class="text-white"><?= htmlspecialchars($_SESSION['pending_email'] ?? '') ?></strong>.
              </p>
-             <form action="profile.php" method="POST" class="space-y-5">
-               <div class="space-y-2">
-                 <label for="otp" class="block text-xs font-bold uppercase tracking-widest text-emerald-300 text-center">Kode OTP</label>
-                 <input type="text" id="otp" name="otp" required maxlength="6" placeholder="123456"
-                  class="w-full px-5 py-4 bg-slate-900/80 border border-emerald-500/50 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all duration-300 text-center tracking-[0.5em] font-mono text-2xl" />
+             <form action="profile.php" method="POST" class="space-y-4">
+               <div class="space-y-1.5">
+                 <label for="otp" class="block text-xs font-medium text-ink-muted text-center">Kode OTP</label>
+                 <input type="text" id="otp" name="otp" required maxlength="6" placeholder="000000"
+                  class="w-full p-3 rounded-lg bg-surface border border-line text-white placeholder-ink-faint text-center tracking-[0.4em] font-mono text-lg focus:outline-none focus:border-accent-600 transition-colors" />
                </div>
-               <div class="flex flex-col sm:flex-row gap-3 pt-2">
+               <div class="flex flex-col sm:flex-row gap-2">
                  <button type="submit" name="verify_otp"
-                   class="flex-1 cursor-pointer py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/50 hover:-translate-y-1">
-                   Verifikasi & Simpan
+                   class="flex-1 cursor-pointer py-2.5 bg-accent-600 hover:bg-accent-500 text-white text-sm font-semibold rounded-lg transition-colors">
+                   Verifikasi &amp; Simpan
                  </button>
                  <button type="submit" name="cancel_otp" formnovalidate
-                   class="cursor-pointer py-4 px-6 bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold rounded-xl transition-all border border-slate-700">
+                   class="cursor-pointer py-2.5 px-4 rounded-lg border border-line text-ink-muted hover:text-ink transition-colors">
                    Batal
                  </button>
                </div>
              </form>
           </div>
         <?php else: ?>
-        <form action="profile.php" method="POST" class="space-y-6">
-          <!-- Full name -->
-          <div class="space-y-2">
-            <label for="fullname" class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Nama Lengkap</label>
+        <form action="profile.php" method="POST" class="space-y-4">
+          <div class="space-y-1.5">
+            <label for="fullname" class="block text-xs font-medium text-ink-muted">Nama Lengkap</label>
             <input type="text" id="fullname" name="fullname" required value="<?= htmlspecialchars($user['fullname']) ?>"
-              class="w-full px-5 py-4 bg-slate-900/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-300" />
+              class="w-full p-3 rounded-lg bg-surface border border-line text-sm text-white placeholder-ink-faint focus:outline-none focus:border-accent-600 transition-colors" />
           </div>
 
-          <!-- Email (Can be changed) -->
-          <div class="space-y-2">
-            <label for="email" class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Email Address</label>
+          <div class="space-y-1.5">
+            <label for="email" class="block text-xs font-medium text-ink-muted">Email</label>
             <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required
-              class="w-full px-5 py-4 bg-slate-900/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-300" />
+              class="w-full p-3 rounded-lg bg-surface border border-line text-sm text-white placeholder-ink-faint focus:outline-none focus:border-accent-600 transition-colors" />
+            <p class="text-xs text-ink-faint">Perubahan email memerlukan kode OTP.</p>
           </div>
 
-          <div class="pt-4 border-t border-slate-800/80">
-            <h3 class="text-sm font-bold text-white mb-1">Ganti Password (Opsional)</h3>
-            <p class="text-xs text-slate-400 font-light mb-4">Biarkan kosong jika tidak ingin mengubah password.</p>
+          <fieldset class="pt-4 border-t border-line">
+            <legend class="text-sm font-medium text-white">Ganti Password</legend>
+            <p class="text-xs text-ink-faint mb-3">Kosongkan semua kolom bila tidak ingin mengganti password.</p>
 
-            <div class="space-y-4">
-              <!-- Old password -->
-              <div class="space-y-2">
-                <label for="old_password" class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Password Lama</label>
-                <input type="password" id="old_password" name="old_password" placeholder="Masukkan password saat ini"
-                  class="w-full px-5 py-4 bg-slate-900/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-300" />
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="space-y-1.5">
+                <label for="old_password" class="block text-xs font-medium text-ink-muted">Password Lama</label>
+                <input type="password" id="old_password" name="old_password" placeholder="Password saat ini"
+                  class="w-full p-3 rounded-lg bg-surface border border-line text-sm text-white placeholder-ink-faint focus:outline-none focus:border-accent-600 transition-colors" />
               </div>
-
-              <!-- New password -->
-              <div class="space-y-2">
-                <label for="new_password" class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Password Baru</label>
+              <div class="space-y-1.5">
+                <label for="new_password" class="block text-xs font-medium text-ink-muted">Password Baru</label>
                 <input type="password" id="new_password" name="new_password" placeholder="Minimal 8 karakter"
-                  class="w-full px-5 py-4 bg-slate-900/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-300" />
-              </div>
-
-              <!-- New password confirmation -->
-              <div class="space-y-2">
-                <label for="confirm_password" class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Konfirmasi Password Baru</label>
-                <input type="password" id="confirm_password" name="confirm_password" placeholder="Ulangi password baru"
-                  class="w-full px-5 py-4 bg-slate-900/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-300" />
+                  class="w-full p-3 rounded-lg bg-surface border border-line text-sm text-white placeholder-ink-faint focus:outline-none focus:border-accent-600 transition-colors" />
               </div>
             </div>
-          </div>
 
-          <!-- Submit button -->
-          <div class="flex justify-end pt-2">
+            <div class="space-y-1.5 mt-3">
+              <label for="confirm_password" class="block text-xs font-medium text-ink-muted">Konfirmasi Password Baru</label>
+              <input type="password" id="confirm_password" name="confirm_password" placeholder="Ulangi password baru"
+                class="w-full p-3 rounded-lg bg-surface border border-line text-sm text-white placeholder-ink-faint focus:outline-none focus:border-accent-600 transition-colors" />
+            </div>
+          </fieldset>
+
+          <div class="flex justify-end pt-1">
             <button type="submit" name="update_profile"
-              class="cursor-pointer px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm font-bold rounded-xl transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/50 hover:-translate-y-1 active:translate-y-0 border border-white/25 ring-1 ring-white/10 drop-shadow-[0_0_12px_rgba(255,255,255,0.20)] hover:border-white/40 hover:ring-white/25 hover:drop-shadow-[0_0_18px_rgba(255,255,255,0.35)]">
-              Simpan Perubahan
+              class="cursor-pointer px-5 py-2.5 bg-accent-600 hover:bg-accent-500 text-white text-sm font-semibold rounded-lg transition-colors">
+              Simpan
             </button>
           </div>
         </form>
         <?php endif; ?>
-      </div>
+      </section>
 
     </div>
 
     <!-- 2FA card -->
-    <div class="mt-8 glass-card p-6 sm:p-8 rounded-3xl border-t border-white/10 shadow-2xl">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+    <section class="mt-6 rounded-xl border border-line bg-raised/40 p-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div>
-          <h2 class="text-xl font-bold text-white">Two-Factor Authentication (2FA)</h2>
-          <p class="text-sm text-slate-400 font-light mt-1">
+          <h2 class="font-semibold text-white">Two-Factor Authentication</h2>
+          <p class="text-sm text-ink-muted mt-0.5">
             Proteksi tambahan memakai kode dari aplikasi authenticator.
           </p>
         </div>
-        <span class="self-start sm:self-center px-3 py-1 rounded-full text-xs font-bold border
+        <span class="text-xs font-medium px-2.5 py-1 rounded-md border
           <?= empty($user['totp_secret'])
-              ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-              : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' ?>">
-          <?= empty($user['totp_secret']) ? 'Belum Aktif' : 'Aktif' ?>
+              ? 'bg-warn/10 text-warn border-warn/30'
+              : 'bg-accent-500/10 text-accent-400 border-accent-600/30' ?>">
+          <?= empty($user['totp_secret']) ? 'Belum aktif' : 'Aktif' ?>
         </span>
       </div>
 
       <?php if (!empty($error) || !empty($success)): ?>
         <div class="mb-5 space-y-3">
           <?php if (!empty($error)): ?>
-            <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm text-center font-medium">
+            <div class="p-3 rounded-lg bg-danger/10 border border-danger/30 text-danger text-sm text-center">
               <?= htmlspecialchars($error); ?>
             </div>
           <?php endif; ?>
           <?php if (!empty($success)): ?>
-            <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm text-center font-medium">
+            <div class="p-3 rounded-lg bg-accent-500/10 border border-accent-600/30 text-accent-400 text-sm text-center">
               <?= htmlspecialchars($success); ?>
             </div>
           <?php endif; ?>
@@ -522,22 +471,23 @@ $userInitials = getInitials($user['fullname'] ?? 'User');
 
       <!-- New backup codes: shown only once -->
       <?php if (!empty($_SESSION['totp_new_codes'])): ?>
-        <div class="p-6 border border-emerald-500/30 bg-emerald-500/10 rounded-2xl mb-6">
-          <p class="text-sm text-emerald-200 text-center mb-4">
-            Simpan kode pemulihan ini sekarang. Kode hanya bisa dipakai <strong>sekali</strong>
-            untuk login jika HP anda hilang. Kode ini tidak akan ditampilkan lagi.
+        <div class="rounded-lg border border-accent-600/30 bg-accent-500/10 p-5 mb-5">
+          <p class="text-sm text-ink-muted mb-4">
+            Simpan kode pemulihan ini sekarang. Tiap kode hanya bisa dipakai <strong
+              class="text-white">sekali</strong> untuk login bila HP kamu hilang, dan tidak akan
+            ditampilkan lagi.
           </p>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <?php foreach ($_SESSION['totp_new_codes'] as $code): ?>
-              <div class="py-2 px-3 text-center bg-slate-900/70 border border-emerald-500/20 rounded-lg">
-                <span class="font-mono text-sm text-white tracking-wider"><?= htmlspecialchars($code) ?></span>
+              <div class="py-2 px-2 text-center bg-surface border border-line rounded-lg">
+                <span class="font-mono text-sm text-white"><?= htmlspecialchars($code) ?></span>
               </div>
             <?php endforeach; ?>
           </div>
-          <form action="profile.php" method="POST" class="mt-5">
+          <form action="profile.php" method="POST" class="mt-4">
             <button type="submit" name="ack_backup_codes"
-              class="cursor-pointer w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-xl transition-all">
-              Saya Sudah Menyimpannya
+              class="cursor-pointer w-full py-2.5 bg-accent-600 hover:bg-accent-500 text-white text-sm font-semibold rounded-lg transition-colors">
+              Saya sudah menyimpannya
             </button>
           </form>
         </div>
@@ -545,31 +495,31 @@ $userInitials = getInitials($user['fullname'] ?? 'User');
 
       <?php if (!empty($_SESSION['totp_setup'])): ?>
         <!-- Scan the QR, then prove it works by typing a code -->
-        <div class="p-6 border border-emerald-500/30 bg-slate-900/40 rounded-2xl">
-          <div class="flex flex-col sm:flex-row gap-6 items-center">
-            <div class="shrink-0 p-3 bg-white rounded-xl">
+        <div class="rounded-lg border border-line bg-surface/50 p-5">
+          <div class="flex flex-col sm:flex-row gap-5 items-start">
+            <div class="shrink-0 p-2.5 bg-white rounded-lg">
               <?= renderQrCode(getTotpUri($_SESSION['totp_setup'], $user['email'])); ?>
             </div>
             <div class="flex-1 w-full">
-              <p class="text-sm text-slate-300 leading-relaxed mb-4">
-                Pindai QR di atas dengan Google Authenticator / Authy, lalu masukkan kode 6 digit
+              <p class="text-sm text-ink-muted leading-relaxed mb-3">
+                Pindai QR di atas dengan Google Authenticator atau Authy, lalu masukkan kode 6 digit
                 yang muncul untuk mengaktifkan 2FA.
               </p>
-              <p class="text-xs text-slate-400 mb-2">Tidak bisa memindai? Masukkan kunci manual:</p>
-              <p class="font-mono text-xs text-emerald-300 break-all mb-5 bg-slate-900/70 p-3 rounded-lg border border-slate-700/50">
+              <p class="text-xs text-ink-faint mb-1.5">Tidak bisa memindai? Masukkan kunci manual:</p>
+              <p class="font-mono text-xs text-accent-400 break-all mb-4 bg-surface border border-line p-2.5 rounded-lg">
                 <?= htmlspecialchars($_SESSION['totp_setup']); ?>
               </p>
               <form action="profile.php" method="POST" class="space-y-3">
                 <input type="text" name="totp_code" required maxlength="6" inputmode="numeric" placeholder="000000"
-                  class="w-full px-5 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-600 text-sm text-center tracking-[0.5em] font-mono focus:outline-none focus:border-emerald-500" />
-                <div class="flex flex-col sm:flex-row gap-3">
+                  class="w-full p-3 rounded-lg bg-surface border border-line text-white placeholder-ink-faint text-center tracking-[0.4em] font-mono focus:outline-none focus:border-accent-600 transition-colors" />
+                <div class="flex flex-col sm:flex-row gap-2">
                   <button type="submit" name="confirm_totp"
-                    class="flex-1 cursor-pointer py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm font-bold rounded-xl transition-all">
+                    class="flex-1 cursor-pointer py-2.5 bg-accent-600 hover:bg-accent-500 text-white text-sm font-semibold rounded-lg transition-colors">
                     Aktivasi
                   </button>
                   <button type="submit" name="cancel_totp"
                     formnovalidate
-                    class="cursor-pointer px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold rounded-xl border border-slate-700">
+                    class="cursor-pointer px-4 py-2.5 rounded-lg border border-line text-ink-muted hover:text-ink transition-colors">
                     Batal
                   </button>
                 </div>
@@ -578,34 +528,36 @@ $userInitials = getInitials($user['fullname'] ?? 'User');
           </div>
         </div>
       <?php elseif (empty($user['totp_secret'])): ?>
+        <p class="text-sm text-ink-muted mb-4">
+          Tambahkan lapisan kedua agar akun tetap aman meski passwordmu bocor.
+        </p>
         <form action="profile.php" method="POST">
           <button type="submit" name="start_totp"
-            class="cursor-pointer px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm font-bold rounded-xl transition-all">
+            class="cursor-pointer px-5 py-2.5 bg-accent-600 hover:bg-accent-500 text-white text-sm font-semibold rounded-lg transition-colors">
             Aktifkan 2FA
           </button>
         </form>
       <?php else: ?>
         <!-- Already active: form to turn it off -->
-        <p class="text-sm text-slate-400 mb-4">
-          2FA aktif. Login berikutnya akan meminta kode dari aplikasi authenticator.
-          Untuk mematikan 2FA, masukkan kode yang sedang aktif.
+        <p class="text-sm text-ink-muted mb-4">
+          2FA aktif. Setiap login akan meminta kode dari aplikasi authenticator.
+          Untuk mematikannya, masukkan kode yang sedang aktif.
         </p>
-        <form action="profile.php" method="POST" class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+        <form action="profile.php" method="POST" class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
           <input type="text" name="totp_code" required maxlength="6" inputmode="numeric" placeholder="000000"
-            class="w-full sm:max-w-[220px] px-5 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-600 text-sm text-center tracking-[0.5em] font-mono focus:outline-none focus:border-rose-500" />
+            class="w-full sm:max-w-[200px] p-3 rounded-lg bg-surface border border-line text-white placeholder-ink-faint text-center tracking-[0.4em] font-mono focus:outline-none focus:border-danger transition-colors" />
           <button type="submit" name="disable_totp"
-            class="cursor-pointer px-6 py-3 bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 text-sm font-bold rounded-xl border border-rose-500/30 transition-all">
+            class="cursor-pointer px-4 py-2.5 rounded-lg border border-danger/30 text-danger hover:bg-danger/10 text-sm font-semibold transition-colors">
             Matikan 2FA
           </button>
         </form>
       <?php endif; ?>
-    </div>
+    </section>
 
   </main>
 
-  <footer class="p-6 relative z-10 text-center glass-nav mt-auto border-t border-white/5">
-    <p class="text-slate-600 text-xs font-medium uppercase tracking-widest">&copy; 2026 SI Keuangan. Secured Profile.
-    </p>
+  <footer class="border-t border-line px-6 py-6">
+    <p class="mx-auto max-w-5xl text-sm text-ink-faint">&copy; 2026 DompetKu.</p>
   </footer>
 </body>
 

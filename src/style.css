@@ -1,1 +1,35 @@
 @import "tailwindcss";
+
+/*
+ * Design tokens for the whole app.
+ * Tailwind v4 generates utilities from these, so bg-accent-600,
+ * text-ink-muted, border-line etc. work like any built-in utility.
+ * Changing a value here changes every page at once.
+ */
+
+@theme {
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+
+  /* Single accent. One colour, used sparingly, instead of emerald+teal gradients. */
+  --color-accent-50: #ecfdf5;
+  --color-accent-100: #d1fae5;
+  --color-accent-300: #6ee7b7;
+  --color-accent-400: #34d399;
+  --color-accent-500: #10b981;
+  --color-accent-600: #059669;
+  --color-accent-700: #047857;
+
+  /* Surfaces */
+  --color-surface: #020617;
+  --color-raised: #0b1120;
+  --color-line: #1e293b;
+
+  /* Text */
+  --color-ink: #f8fafc;
+  --color-ink-muted: #94a3b8;
+  --color-ink-faint: #64748b;
+
+  /* Feedback */
+  --color-danger: #fb7185;
+  --color-warn: #fbbf24;
+}

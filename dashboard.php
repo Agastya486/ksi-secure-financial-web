@@ -95,165 +95,151 @@ $userName     = htmlspecialchars($_SESSION['fullname'] ?? 'User');
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Keuangan - SI Keuangan</title>
+  <title>Dashboard Keuangan - DompetKu</title>
   <link rel="stylesheet" href="./dist/output.css" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Outfit', sans-serif; }
-    .glass-nav {
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    .grid-lines {
+      background-size: 56px 56px;
+      background-image: linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
     }
-    .glass-card {
-      background: rgba(30, 41, 59, 0.4);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+
+    .glow {
+      position: absolute;
+      border-radius: 9999px;
+      filter: blur(120px);
+      pointer-events: none;
     }
-    .grid-pattern {
-      background-size: 40px 40px;
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    }
-    .blob { filter: blur(100px); z-index: -1; opacity: 0.4; }
   </style>
 </head>
 
-<body class="bg-slate-950 text-slate-200 antialiased min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white relative overflow-x-hidden">
+<body class="bg-surface text-ink antialiased min-h-screen flex flex-col font-sans selection:bg-accent-600 selection:text-white relative overflow-x-hidden">
 
-  <div class="fixed inset-0 grid-pattern pointer-events-none z-[-2]"></div>
-  <div class="fixed top-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-emerald-600/20 blob pointer-events-none"></div>
-  <div class="fixed bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-teal-600/10 blob pointer-events-none"></div>
+  <div class="fixed inset-0 grid-lines pointer-events-none z-[-2]"></div>
+  <div class="glow top-[-20%] right-[-10%] w-[40rem] h-[40rem] bg-accent-600/10"></div>
 
   <!-- Navbar -->
-  <header class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-      <a href="dashboard.php" class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-3 group">
-        <div class="relative w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 shadow-lg shadow-emerald-500/30 group-hover:shadow-emerald-500/50 transition-all duration-300 transform group-hover:scale-105">
-          <span class="text-white font-black text-lg">Rp</span>
-        </div>
-        <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 hidden sm:inline-block">SI Keuangan</span>
+  <header class="sticky top-0 z-50 border-b border-line/70 bg-surface/80 backdrop-blur-xl">
+    <div class="mx-auto max-w-5xl px-6 h-16 flex items-center justify-between">
+      <a href="dashboard.php" class="flex items-center gap-2.5">
+        <img src="./dist/logo.png" alt="DompetKu" class="w-9 h-9" />
+        <span class="font-bold tracking-tight text-white">DompetKu</span>
       </a>
 
-      <nav class="hidden md:flex items-center gap-8">
-        <a href="dashboard.php" class="text-sm font-bold text-white relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-emerald-500 after:rounded-full">Dashboard</a>
-        <a href="profile.php" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Profil</a>
+      <nav class="hidden sm:flex items-center gap-6 text-sm">
+        <a href="dashboard.php" class="text-white font-medium">Dashboard</a>
+        <a href="profile.php" class="text-ink-muted hover:text-ink transition-colors">Profil</a>
       </nav>
 
-      <div class="flex items-center gap-5">
-        <a href="profile.php" class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-sm hover:scale-105 transition-transform hover:shadow-lg hover:shadow-emerald-500/20 group relative">
-          <?= htmlspecialchars($userInitials) ?>
-          <span class="absolute -bottom-10 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-xs px-2 py-1 rounded text-white whitespace-nowrap pointer-events-none"><?= $userName ?></span>
-        </a>
-        <div class="w-px h-6 bg-slate-700/50 hidden sm:block"></div>
-        <a href="logout.php" class="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-rose-400 transition-colors flex items-center gap-1">
-          <span>Logout</span><span class="text-lg">→</span>
-        </a>
+      <div class="flex items-center gap-3">
+        <a href="profile.php"
+          class="w-9 h-9 grid place-items-center rounded-lg border border-line bg-raised text-sm font-semibold text-accent-400 hover:border-accent-600 transition-colors"
+          title="<?= $userName ?>"><?= htmlspecialchars($userInitials) ?></a>
+        <a href="logout.php" class="text-sm text-ink-muted hover:text-danger transition-colors">Keluar</a>
       </div>
     </div>
   </header>
 
-  <main class="pt-32 pb-16 px-6 max-w-4xl mx-auto w-full flex-grow relative z-10">
+  <main class="mx-auto max-w-5xl w-full px-6 py-10 flex-grow">
 
-    <div class="mb-10 flex flex-col items-center sm:items-start text-center sm:text-left">
-      <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight mb-2">Dashboard Keuangan</h1>
-      <p class="text-slate-400 text-base font-light">Catat pemasukan & pengeluaran harianmu dengan simpel.</p>
-    </div>
+    <h1 class="text-2xl font-bold text-white tracking-tight">Dashboard</h1>
+    <p class="mt-1 text-ink-muted">Catat pemasukan dan pengeluaran harianmu.</p>
 
     <!-- Summary (3 cards) -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-      <div class="glass-card rounded-2xl p-6 border-l-4 border-l-emerald-500">
-        <p class="text-xs font-bold uppercase tracking-widest text-emerald-300 mb-1">Pemasukan</p>
-        <p class="text-2xl font-black text-white"><?= rupiah($totalMasuk) ?></p>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 mb-10">
+      <div class="rounded-xl border border-line bg-raised/50 p-5">
+        <p class="text-xs text-ink-faint">Pemasukan</p>
+        <p class="mt-1 text-xl font-bold text-accent-400"><?= rupiah($totalMasuk) ?></p>
       </div>
-      <div class="glass-card rounded-2xl p-6 border-l-4 border-l-rose-500">
-        <p class="text-xs font-bold uppercase tracking-widest text-rose-300 mb-1">Pengeluaran</p>
-        <p class="text-2xl font-black text-white"><?= rupiah($totalKeluar) ?></p>
+      <div class="rounded-xl border border-line bg-raised/50 p-5">
+        <p class="text-xs text-ink-faint">Pengeluaran</p>
+        <p class="mt-1 text-xl font-bold text-danger"><?= rupiah($totalKeluar) ?></p>
       </div>
-      <div class="glass-card rounded-2xl p-6 border-l-4 border-l-teal-500">
-        <p class="text-xs font-bold uppercase tracking-widest text-teal-300 mb-1">Saldo</p>
-        <p class="text-2xl font-black <?= $saldo >= 0 ? 'text-white' : 'text-rose-400' ?>"><?= rupiah($saldo) ?></p>
+      <div class="rounded-xl border border-line bg-raised/50 p-5">
+        <p class="text-xs text-ink-faint">Saldo</p>
+        <p class="mt-1 text-xl font-bold <?= $saldo >= 0 ? 'text-white' : 'text-danger' ?>"><?= rupiah($saldo) ?></p>
       </div>
     </div>
 
     <!-- Add transaction form -->
-    <div class="glass-card rounded-3xl p-6 sm:p-8 border-t border-white/10 shadow-2xl shadow-emerald-500/5 mb-10 hover:border-emerald-500/20 transition-all duration-300">
-      <h2 class="text-lg font-bold text-white mb-6">Tambah Transaksi Baru</h2>
+    <section class="rounded-xl border border-line bg-raised/40 p-6 mb-10">
+      <h2 class="font-semibold text-white mb-5">Tambah Transaksi</h2>
+
       <form action="dashboard.php" method="POST" class="space-y-4">
         <input type="hidden" name="action" value="add">
 
         <?php if (!empty($error)): ?>
-          <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm text-center font-medium">
+          <div class="p-3 rounded-lg bg-danger/10 border border-danger/30 text-danger text-sm text-center">
             <?= htmlspecialchars($error); ?>
           </div>
         <?php endif; ?>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="space-y-2">
-            <label class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Tanggal</label>
+          <div class="space-y-1.5">
+            <label class="block text-xs font-medium text-ink-muted">Tanggal</label>
             <input type="date" name="tanggal" value="<?= date('Y-m-d') ?>" required
-              class="w-full p-4 bg-slate-900/50 border border-slate-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all" />
+              class="w-full p-3 rounded-lg bg-surface border border-line text-sm text-white focus:outline-none focus:border-accent-600 transition-colors" />
           </div>
-          <div class="space-y-2">
-            <label class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Tipe</label>
+          <div class="space-y-1.5">
+            <label class="block text-xs font-medium text-ink-muted">Tipe</label>
             <select name="tipe" id="tipeSelect" required
-              class="w-full p-4 bg-slate-900/50 border border-slate-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+              class="w-full p-3 rounded-lg bg-surface border border-line text-sm text-white focus:outline-none focus:border-accent-600 transition-colors">
               <option value="pemasukan">Pemasukan (+)</option>
               <option value="pengeluaran" selected>Pengeluaran (−)</option>
             </select>
           </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="space-y-2">
-            <label class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Kategori</label>
+          <div class="space-y-1.5">
+            <label class="block text-xs font-medium text-ink-muted">Kategori</label>
             <select name="kategori" id="kategoriSelect" required
-              class="w-full p-4 bg-slate-900/50 border border-slate-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+              class="w-full p-3 rounded-lg bg-surface border border-line text-sm text-white focus:outline-none focus:border-accent-600 transition-colors">
             </select>
           </div>
-          <div class="space-y-2">
-            <label class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Nominal (Rp)</label>
-            <input type="number" name="jumlah" min="1" step="0.01" required placeholder="cth: 50000"
-              class="w-full p-4 bg-slate-900/50 border border-slate-700/50 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all" />
+          <div class="space-y-1.5">
+            <label class="block text-xs font-medium text-ink-muted">Nominal (Rp)</label>
+            <input type="number" name="jumlah" min="1" step="0.01" required placeholder="50000"
+              class="w-full p-3 rounded-lg bg-surface border border-line text-sm text-white placeholder-ink-faint focus:outline-none focus:border-accent-600 transition-colors" />
           </div>
         </div>
 
-        <div class="space-y-2">
-          <label class="block text-xs font-bold uppercase tracking-widest text-emerald-300">Keterangan (opsional)</label>
-          <input type="text" name="keterangan" maxlength="255" placeholder="cth: Makan siang / Gaji bulanan"
-            class="w-full p-4 bg-slate-900/50 border border-slate-700/50 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all" />
+        <div class="space-y-1.5">
+          <label class="block text-xs font-medium text-ink-muted">Keterangan <span class="text-ink-faint">(opsional)</span></label>
+          <input type="text" name="keterangan" maxlength="255" placeholder="Makan siang"
+            class="w-full p-3 rounded-lg bg-surface border border-line text-sm text-white placeholder-ink-faint focus:outline-none focus:border-accent-600 transition-colors" />
         </div>
 
         <div class="flex justify-end">
           <button type="submit"
-            class="cursor-pointer px-8 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-1 active:translate-y-0 border border-white/25 ring-1 ring-white/10 drop-shadow-[0_0_12px_rgba(255,255,255,0.20)] hover:border-white/40 hover:ring-white/25 hover:drop-shadow-[0_0_18px_rgba(255,255,255,0.35)]">
-            Simpan Transaksi
+            class="cursor-pointer px-5 py-2.5 bg-accent-600 hover:bg-accent-500 text-white text-sm font-semibold rounded-lg transition-colors">
+            Simpan
           </button>
         </div>
       </form>
-    </div>
+    </section>
 
     <!-- Transaction history -->
-    <div class="space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/50 pb-4">
-        <h2 class="text-xl font-bold text-white">Riwayat Transaksi</h2>
+    <section>
+      <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-line">
+        <h2 class="font-semibold text-white">Riwayat Transaksi</h2>
+
         <div class="flex items-center gap-2">
-          <button type="button" data-filter="semua" class="filter-btn text-xs font-bold px-4 py-2 rounded-full transition-all bg-white text-slate-900">Semua</button>
-          <button type="button" data-filter="pemasukan" class="filter-btn text-xs font-bold px-4 py-2 rounded-full transition-all bg-slate-800/50 text-slate-400 hover:text-white">Masuk</button>
-          <button type="button" data-filter="pengeluaran" class="filter-btn text-xs font-bold px-4 py-2 rounded-full transition-all bg-slate-800/50 text-slate-400 hover:text-white">Keluar</button>
-          <span id="trxCount" class="text-xs font-semibold text-slate-500 uppercase tracking-widest bg-slate-800/50 px-3 py-2 rounded-full"><?= count($transactions) ?></span>
+          <button type="button" data-filter="semua"
+            class="filter-btn text-xs font-medium px-3 py-1.5 rounded-md transition-colors bg-accent-600 text-white">Semua</button>
+          <button type="button" data-filter="pemasukan"
+            class="filter-btn text-xs font-medium px-3 py-1.5 rounded-md transition-colors text-ink-muted hover:text-ink border border-line">Masuk</button>
+          <button type="button" data-filter="pengeluaran"
+            class="filter-btn text-xs font-medium px-3 py-1.5 rounded-md transition-colors text-ink-muted hover:text-ink border border-line">Keluar</button>
+          <span id="trxCount" class="text-xs text-ink-faint tabular-nums"><?= count($transactions) ?></span>
         </div>
       </div>
 
-      <div id="trxList" class="grid gap-4">
+      <div id="trxList" class="divide-y divide-line">
         <?php if (empty($transactions)): ?>
-          <div class="p-8 glass-card rounded-2xl text-center text-slate-400 font-light">
-            Belum ada transaksi. Catat pemasukan / pengeluaran pertamamu di atas!
+          <div class="py-12 text-center text-ink-muted">
+            Belum ada transaksi. Catat yang pertama di atas.
           </div>
         <?php else: ?>
-          <div id="trxEmptyFilter" class="hidden p-8 glass-card rounded-2xl text-center text-slate-400 font-light">
+          <div id="trxEmptyFilter" class="hidden py-12 text-center text-ink-muted">
             Tidak ada transaksi pada filter ini.
           </div>
           <?php foreach ($transactions as $trx): ?>
@@ -261,32 +247,29 @@ $userName     = htmlspecialchars($_SESSION['fullname'] ?? 'User');
               $isMasuk = $trx['tipe'] === 'pemasukan';
               $tgl = date('d M Y', strtotime($trx['tanggal']));
             ?>
-            <div data-tipe="<?= $trx['tipe'] ?>" class="trx-item p-5 glass-card rounded-2xl border-l-4 <?= $isMasuk ? 'border-l-emerald-500' : 'border-l-rose-500' ?> hover:bg-slate-800/30 transition-all duration-300">
-              <div class="flex justify-between items-start gap-3">
-                <div class="flex-1">
-                  <div class="flex items-center gap-2 mb-1 flex-wrap">
-                    <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-1 rounded-md <?= $isMasuk ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/20' : 'bg-rose-500/15 text-rose-300 border border-rose-500/20' ?>">
-                      <?= $isMasuk ? '+ Masuk' : '− Keluar' ?>
-                    </span>
-                    <span class="text-[11px] font-semibold text-slate-400 bg-slate-800 px-2 py-1 rounded-md"><?= htmlspecialchars($trx['kategori']) ?></span>
-                    <span class="text-[11px] text-slate-500"><?= $tgl ?></span>
-                  </div>
-                  <p class="text-sm text-slate-200 font-medium"><?= !empty($trx['keterangan']) ? htmlspecialchars($trx['keterangan']) : '<span class="text-slate-500 italic">Tanpa keterangan</span>' ?></p>
-                </div>
-                <div class="text-right shrink-0">
-                  <p class="text-base font-black <?= $isMasuk ? 'text-emerald-400' : 'text-rose-400' ?>"><?= ($isMasuk ? '+' : '−') . rupiah($trx['jumlah']) ?></p>
-                </div>
+            <div data-tipe="<?= $trx['tipe'] ?>"
+              class="trx-item flex items-center gap-4 py-3.5">
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-sm text-ink">
+                  <?= !empty($trx['keterangan']) ? htmlspecialchars($trx['keterangan']) : '<span class="text-ink-faint">Tanpa keterangan</span>' ?>
+                </p>
+                <p class="mt-0.5 text-xs text-ink-faint">
+                  <?= htmlspecialchars($trx['kategori']) ?> &middot; <?= $tgl ?>
+                </p>
               </div>
+              <span class="shrink-0 text-sm font-semibold tabular-nums <?= $isMasuk ? 'text-accent-400' : 'text-danger' ?>">
+                <?= ($isMasuk ? '+' : '−') . rupiah($trx['jumlah']) ?>
+              </span>
             </div>
           <?php endforeach; ?>
         <?php endif; ?>
       </div>
-    </div>
+    </section>
 
   </main>
 
-  <footer class="p-6 relative z-10 text-center glass-nav mt-auto border-t border-white/5">
-    <p class="text-slate-600 text-xs font-medium uppercase tracking-widest">&copy; 2026 SI Keuangan.</p>
+  <footer class="border-t border-line px-6 py-6">
+    <p class="mx-auto max-w-5xl text-sm text-ink-faint">&copy; 2026 DompetKu.</p>
   </footer>
 
   <script>
@@ -306,12 +289,10 @@ $userName     = htmlspecialchars($_SESSION['fullname'] ?? 'User');
     const trxItems = document.querySelectorAll('.trx-item');
     const trxCount = document.getElementById('trxCount');
     const trxEmptyFilter = document.getElementById('trxEmptyFilter');
-    const activeStyles = {
-      semua: ['bg-white', 'text-slate-900'],
-      pemasukan: ['bg-emerald-500', 'text-white'],
-      pengeluaran: ['bg-rose-500', 'text-white']
-    };
-    const idleClasses = ['bg-slate-800/50', 'text-slate-400', 'hover:text-white'];
+    const activeClass = 'bg-accent-600';
+    const activeText = 'text-white';
+    const idleText = 'text-ink-muted';
+    const idleBorder = 'border-line';
     function applyFilter(f) {
       let visible = 0;
       trxItems.forEach(el => {
@@ -323,12 +304,10 @@ $userName     = htmlspecialchars($_SESSION['fullname'] ?? 'User');
       if (trxCount) trxCount.textContent = visible;
       filterBtns.forEach(btn => {
         const isActive = btn.dataset.filter === f;
-        btn.classList.remove('bg-white', 'text-slate-900', 'bg-emerald-500', 'text-white', 'bg-rose-500', ...idleClasses);
-        if (isActive) {
-          btn.classList.add(...activeStyles[f]);
-        } else {
-          btn.classList.add(...idleClasses);
-        }
+        btn.classList.toggle(activeClass, isActive);
+        btn.classList.toggle(activeText, isActive);
+        btn.classList.toggle(idleText, !isActive);
+        btn.classList.toggle(idleBorder, !isActive);
       });
     }
     filterBtns.forEach(btn => btn.addEventListener('click', () => applyFilter(btn.dataset.filter)));

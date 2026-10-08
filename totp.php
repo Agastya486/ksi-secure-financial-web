@@ -15,7 +15,7 @@ function generateTotpSecret(): string {
 function getTotpUri(string $secret, string $email): string {
     $totp = TOTP::createFromSecret($secret);
     $totp->setLabel($email);
-    $totp->setIssuer('SI Keuangan');
+    $totp->setIssuer('DompetKu');
 
     return $totp->getProvisioningUri();
 }
